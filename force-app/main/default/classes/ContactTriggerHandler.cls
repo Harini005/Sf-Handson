@@ -23,4 +23,28 @@ public with sharing class ContactTriggerHandler {
         
         update accounts;
     }
+    
+    public static void createAccount(){
+        
+        Map<Id,Contact> newMap = (Map<Id,Contact>)Trigger.newMap;
+        Map<Id,Account> contactIdToaccounts = new Map<Id,Account>();
+        for(Contact cont : newMap.values()){
+            if(cont.AccountId == null || String.isBlank(cont.AccountId)){
+                contactIdToaccounts.put(cont.Id, new Account(Name=cont.LastName));
+            }
+        }
+        
+        if(contactIdToaccounts.isEmpty()){
+            return;
+        }
+        
+        insert contactIdToaccounts.values();
+        
+        List<Contact> contacts = [SELECT Id,AccountId From Contact Where Id IN :contactIdToaccounts.KeySet()];
+        for(Contact cont : contacts){
+            cont.AccountId  = contactIdToaccounts.get(cont.Id).Id;
+        }
+        
+        update contacts;
+    }
 }
