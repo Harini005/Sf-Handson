@@ -8,7 +8,7 @@ trigger ContactTrigger on Contact (after insert, after update , before insert, b
         }
         
         if(Trigger.isBefore){
-            if(Trigger.isInsert && Trigger.isUpdate){
+            if(Trigger.isInsert || Trigger.isUpdate){
                 ContactTriggerHandler.validateContactFields();
             }
         }
