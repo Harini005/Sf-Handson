@@ -47,4 +47,13 @@ public with sharing class ContactTriggerHandler {
         
         update contacts;
     }
+    
+    public static void validateContactFields(){
+        List<Contact> contacts = (List<Contact>) Trigger.new;
+        for(Contact cont : contacts){
+            if(String.isBlank(cont.Email) && String.isBlank(cont.Phone)){
+                cont.addError('Please Fill Email OR Phone to Contact');
+            }
+        }
+    }
 }
