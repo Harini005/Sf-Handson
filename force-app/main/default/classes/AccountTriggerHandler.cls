@@ -16,4 +16,36 @@ public with sharing class AccountTriggerHandler {
         }
         update contacts;
     }
+    
+    public static void createRelatedRecords(){
+        System.Savepoint savepoint = Database.setSavepoint();
+        
+        List<Account> records = (List<Account>) Trigger.new;
+        List<sobject> relatedRecords = new List<Sobject>();
+        for(Account record : records){
+            sobject contact = new Contact();
+            contact.put('FirstName', record.Name);
+            contact.put('LastName', 'Contact');
+            contact.put('AccountId', record.Id);
+            contact.put('Email', 'test@mail.com');
+            
+            sobject opportunity = new Opportunity();
+            opportunity.put('Name', record.Name+' Opportunity');
+            opportunity.put('StageName', 'Prospecting');
+            opportunity.put('CloseDate', System.today().addMonths(1));
+            opportunity.put('Amount', 1000);
+            opportunity.put('AccountId', record.Id);
+            
+            relatedRecords.add(contact);
+            relatedRecords.add(opportunity);
+        }
+        
+        try{
+            insert relatedRecords;
+        }
+        catch(Exception e){
+            Database.rollback(savepoint);
+        }
+        
+    }
 }
