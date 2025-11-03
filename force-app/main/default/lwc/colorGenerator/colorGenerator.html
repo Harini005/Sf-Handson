@@ -1,0 +1,14 @@
+<template>
+    <lightning-card>
+        <div>
+            <lightning-slider min="0" max="255" label="Red" onchange={handleSlider} value="0"></lightning-slider>
+            <lightning-slider min="0" max="255" label="Green" onchange={handleSlider} value="0"></lightning-slider>
+            <lightning-slider min="0" max="255" label="Blue" onchange={handleSlider} value="0"></lightning-slider>
+
+        </div>
+        <br />
+
+        <div class="box" style="height:100px;width:100px;border:2px solid black;float:center"></div>
+
+    </lightning-card>
+</template>
