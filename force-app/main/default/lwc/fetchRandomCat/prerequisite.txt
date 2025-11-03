@@ -1,0 +1,3 @@
+Before adding the component to the Org. 
+Set Up -> Qick FInd -> Trusted Urls -> New Trusted Url -> Add URL.
+else content will be blocked on the org. Based on the Response Url of the call if required add that URL as well.

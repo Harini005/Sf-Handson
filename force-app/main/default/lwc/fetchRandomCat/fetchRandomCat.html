@@ -1,0 +1,18 @@
+<template>
+    <template lwc:if={image}>
+        <lightning-layout>
+            <lightning-layout-item horizontal-align="center" vertical-align="center">
+                <img src={image} height="300px" width="300px" />
+            </lightning-layout-item>
+            <lightning-layout-item>
+                <lightning-button-icon icon-name="action:refresh" onclick={refreshHandler}
+                    style="float: center;"></lightning-button-icon>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+    <template lwc:else>
+        <lightning-card>
+            <lightning-spinner size="large"></lightning-spinner>
+        </lightning-card>
+    </template>
+</template>
