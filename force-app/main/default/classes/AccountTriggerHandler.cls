@@ -48,4 +48,15 @@ public with sharing class AccountTriggerHandler {
         }
         
     }
-}
+    
+    public static void setDescription(){
+        Map<Id,Account> newMap = (Map<Id,Account>)Trigger.newMap;
+        Map<Id,Account> oldMap = (Map<Id,Account>) Trigger.oldMap;
+        
+        for(Account acc : newMap.values()){
+            if(acc.Phone != oldMap.get(acc.Id).Phone){
+                acc.Description = String.format('Phone is Updated! Old Value : {0} & New Value : {1}', new List<String>{oldMap.get(acc.Id).Phone}, acc.Phone);
+                    }
+                }
+            }
+        }
