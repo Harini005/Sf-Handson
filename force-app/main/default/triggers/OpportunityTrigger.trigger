@@ -1,0 +1,9 @@
+trigger OpportunityTrigger on Opportunity (after insert , after update, after delete, after undelete) {
+   
+    if(Trigger_Invocation__mdt.getInstance('OpportunityTrigger').Active__c){
+        if(Trigger.isAfter){
+            OpportunityTriggerHandler.updateAccount();
+        }
+    }
+    
+}
