@@ -1,4 +1,4 @@
-trigger AccountTrigger on Account (before delete, after delete , after insert, before update) {
+trigger AccountTrigger on Account (before delete, after delete , after insert, before update , after update) {
     if(Trigger_Invocation__mdt.getInstance('AccountTrigger').Active__c){
         if(Trigger.isBefore){
             if(Trigger.isDelete){
@@ -8,12 +8,18 @@ trigger AccountTrigger on Account (before delete, after delete , after insert, b
             
             if(Trigger.isUpdate){
                 AccountTriggerHandler.setDescription();
+               
             }
         }
         
         if(Trigger.isAfter){
             if(Trigger.isInsert){
                 AccountTriggerHandler.createRelatedRecords();
+                 AccountTriggerHandler.syncContactPhone();
+            }
+
+            if(Trigger.isUpdate){
+                 AccountTriggerHandler.syncContactPhone();
             }
         }
     }
