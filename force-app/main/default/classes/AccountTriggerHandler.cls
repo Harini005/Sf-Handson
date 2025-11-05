@@ -55,8 +55,18 @@ public with sharing class AccountTriggerHandler {
         
         for(Account acc : newMap.values()){
             if(acc.Phone != oldMap.get(acc.Id).Phone){
-                acc.Description = String.format('Phone is Updated! Old Value : {0} & New Value : {1}', new List<String>{oldMap.get(acc.Id).Phone}, acc.Phone);
+                acc.Description = String.format('Phone is Updated! Old Value : {0} & New Value : {1}', new List<String>{acc.Phone, oldMap.get(acc.Id).Phone});
                     }
                 }
+            }
+
+              public static void syncContactPhone(){
+                List<Contact> contacts = [select Id,Phone, Account.Phone From Contact Where AccountId IN :Trigger.new];
+                for(Contact con : contacts){
+                    if(con.Phone != con.Account.Phone){
+                        con.phone = con.Account.Phone;
+                    }
+                }
+                update contacts;
             }
         }
