@@ -120,10 +120,14 @@ public with sharing class AccountTriggerHandler {
 
     public static void preventAccountDeletionWhenOppsReated(){
         List<Account> accounts = (List<Account>) Trigger.old;
-        Map<Id,Account> accountsMap = new Map<Id,Account>([SELECT Id,(Select Id FROM Opportunities) FROM Account Where Id IN :accounts]);
+        Map<Id,Account> accountsMap = new Map<Id,Account>([SELECT Id,(Select Id FROM Opportunities),(Select Id From Cases) FROM Account Where Id IN :accounts]);
         for(Account acc : accounts){
             if(!accountsMap.get(acc.Id).Opportunities?.isEmpty()){
                 acc.addError('Account has Associated Deals');
+            }
+
+            if(!accountsMap.get(acc.Id).cases?.isEmpty()){
+                acc.addError('Account has Associated Cases');
             }
         }
     }
