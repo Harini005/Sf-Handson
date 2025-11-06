@@ -1,5 +1,8 @@
 public with sharing class OpportunityTriggerHandler {
     public Static final TriggerOperation AFTER_DELETE = TriggerOperation.AFTER_DELETE;
+    public Static final String CLOSED_LOST = 'Closed Lost';
+    public Static final String ADMIN = 'System Administrator';
+
     public static void updateAccount(){
         TriggerOperation currentContext = Trigger.operationType;
         Map<Id,Opportunity> newMap = (Map<Id,Opportunity>) Trigger.newMap;
@@ -51,5 +54,25 @@ public with sharing class OpportunityTriggerHandler {
         }
         
         insert tasks;
+    }
+
+    public static void validateClosedLostReason(){
+        Map<Id,Opportunity> oldMap = (Map<Id,Opportunity>) Trigger.oldMap;
+        for(Opportunity opp : (List<Opportunity>) Trigger.new){
+            if(oldMap.get(opp.Id).StageName != opp.StageName && opp.StageName == CLOSED_LOST && String.isBlank(opp.Closed_Lost_Reason__c)){
+                opp.addError('Please Provide Closed Lost Reason');
+            }
+        }
+    }
+
+    public static void preventClosedDeal(){
+        Profile currentUserProfile = [SELECT Id,Name From Profile Where Id = :UserInfo.getProfileId()];
+        if(currentUserProfile.Name != ADMIN){
+            for(Opportunity opp : (List<Opportunity>) Trigger.old){
+               if(opp.IsClosed){
+                 opp.addError('You are not authorized to delete the record. Contact your System Admin');
+               }
+            }
+        }
     }
 }
