@@ -8,6 +8,7 @@ trigger AccountTrigger on Account (before delete, after delete , after insert, b
             
             if(Trigger.isUpdate){
                 AccountTriggerHandler.setDescription();
+                AccountTriggerHandler.preventAccountUpdates();
                
             }
         }

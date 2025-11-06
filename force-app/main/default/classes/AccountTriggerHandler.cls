@@ -1,6 +1,8 @@
 public with sharing class AccountTriggerHandler {
     public static final String CLOSED_LOST = 'Closed Lost';
     public static final String CLOSED_WON = 'Closed Won';
+    public static final Boolean NOT_VALID = false;
+
     public static void PreventActiveAccount(){
         List<Account> accounts = (List<Account>) Trigger.old;
         for(Account acc : accounts){
@@ -93,5 +95,15 @@ public with sharing class AccountTriggerHandler {
         }
 
         update opportunities;
+    }
+
+    public static void preventAccountUpdates(){
+       for(Account acc : (List<Account>) Trigger.new){
+        Date accoutCreatedDate = System.Today()-7;
+        if(acc.Do_Not_Update__c && acc.CreatedDate <= accoutCreatedDate){
+                acc.addError('OOPS! This account can\'t be updated');
+            }
+        }
+        
     }
 }
