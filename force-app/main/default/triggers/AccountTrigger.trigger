@@ -4,6 +4,7 @@ trigger AccountTrigger on Account (before delete, after delete , after insert, b
             if(Trigger.isDelete){
                 AccountTriggerHandler.PreventActiveAccount();
                 AccountTriggerHandler.preventContactDeletion();
+                AccountTriggerHandler.preventAccountDeletion();
             }
             
             if(Trigger.isUpdate){

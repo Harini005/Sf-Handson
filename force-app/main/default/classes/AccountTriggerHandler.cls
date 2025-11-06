@@ -2,6 +2,7 @@ public with sharing class AccountTriggerHandler {
     public static final String CLOSED_LOST = 'Closed Lost';
     public static final String CLOSED_WON = 'Closed Won';
     public static final Boolean NOT_VALID = false;
+    public static final String ADMIN = 'System Administrator';
 
     public static void PreventActiveAccount(){
         List<Account> accounts = (List<Account>) Trigger.old;
@@ -92,6 +93,7 @@ public with sharing class AccountTriggerHandler {
 
         for(Opportunity opp : opportunities){
             opp.StageName = CLOSED_LOST;
+            opp.Closed_Lost_Reason__c = 'Account Deactivated';
         }
 
         update opportunities;
@@ -105,5 +107,14 @@ public with sharing class AccountTriggerHandler {
             }
         }
         
+    }
+
+    public static void preventAccountDeletion(){
+        Profile currentUserProfile = [SELECT Id,Name FROM Profile Where Id = :UserInfo.getProfileId()];
+        if(currentUserProfile.Name != ADMIN){
+            for(Account acc : (List<Account>) Trigger.old){
+                acc.addError('You are not authorized to delete the record. Contact your System Admin');
+            }
+        }
     }
 }
