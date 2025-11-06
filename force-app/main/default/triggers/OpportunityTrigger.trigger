@@ -1,4 +1,4 @@
-trigger OpportunityTrigger on Opportunity (after insert , after update, after delete, after undelete , before update) {
+trigger OpportunityTrigger on Opportunity (after insert , after update, after delete, after undelete , before update , before delete) {
    
     if(Trigger_Invocation__mdt.getInstance('OpportunityTrigger').Active__c){
         if(Trigger.isAfter){
@@ -10,7 +10,11 @@ trigger OpportunityTrigger on Opportunity (after insert , after update, after de
 
         if(Trigger.isBefore){
             if(Trigger.isUpdate){
-                OpportunityTriggerHandler.ValidateClosedLostReason();
+                OpportunityTriggerHandler.validateClosedLostReason();
+            }
+
+            if(Trigger.isDelete){
+                OpportunityTriggerHandler.preventClosedDeal();
             }
         }
     }
