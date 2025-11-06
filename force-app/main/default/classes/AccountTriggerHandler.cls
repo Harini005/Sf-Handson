@@ -1,4 +1,6 @@
 public with sharing class AccountTriggerHandler {
+    public static final String CLOSED_LOST = 'Closed Lost';
+    public static final String CLOSED_WON = 'Closed Won';
     public static void PreventActiveAccount(){
         List<Account> accounts = (List<Account>) Trigger.old;
         for(Account acc : accounts){
@@ -59,14 +61,37 @@ public with sharing class AccountTriggerHandler {
                     }
                 }
             }
-
-              public static void syncContactPhone(){
-                List<Contact> contacts = [select Id,Phone, Account.Phone From Contact Where AccountId IN :Trigger.new];
-                for(Contact con : contacts){
-                    if(con.Phone != con.Account.Phone){
-                        con.phone = con.Account.Phone;
-                    }
+            
+    public static void syncContactPhone(){
+        List<Contact> contacts = [select Id,Phone, Account.Phone From Contact Where AccountId IN :Trigger.new];
+        for(Contact con : contacts){
+            if(con.Phone != con.Account.Phone){
+                con.phone = con.Account.Phone;
                 }
-                update contacts;
+            }
+        update contacts;
+    }
+
+    public static void updateOpportunities(){
+        Map<Id,Account> newMap = (Map<Id, Account>) Trigger.newMap;
+        Map<Id,Account> oldMap = (Map<Id, Account>) Trigger.oldMap;
+        List<Id> accountIds = new List<Id>();
+        for(Account acc : newMap.values()){
+            if(acc.Active__c == 'No' && oldMap.get(acc.Id).Active__C != newMap.get(acc.Id).Active__c){
+                accountIds.add(acc.Id);
             }
         }
+
+        if(accountIds.isEmpty()){
+            return;
+        }
+
+        List<Opportunity> opportunities = [SELECT Id, StageName From Opportunity Where AccountId IN :accountIds And StageName != :CLOSED_WON];
+
+        for(Opportunity opp : opportunities){
+            opp.StageName = CLOSED_LOST;
+        }
+
+        update opportunities;
+    }
+}
