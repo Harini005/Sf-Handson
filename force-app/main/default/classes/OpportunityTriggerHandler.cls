@@ -1,5 +1,6 @@
 public with sharing class OpportunityTriggerHandler {
     public Static final TriggerOperation AFTER_DELETE = TriggerOperation.AFTER_DELETE;
+    public Static final String CLOSED_LOST = 'Closed Lost';
     public static void updateAccount(){
         TriggerOperation currentContext = Trigger.operationType;
         Map<Id,Opportunity> newMap = (Map<Id,Opportunity>) Trigger.newMap;
@@ -51,5 +52,14 @@ public with sharing class OpportunityTriggerHandler {
         }
         
         insert tasks;
+    }
+
+    public static void ValidateClosedLostReason(){
+        Map<Id,Opportunity> oldMap = (Map<Id,Opportunity>) Trigger.oldMap;
+        for(Opportunity opp : (List<Opportunity>) Trigger.new){
+            if(oldMap.get(opp.Id).StageName != opp.StageName && opp.StageName == CLOSED_LOST && String.isBlank(opp.Closed_Lost_Reason__c)){
+                opp.addError('Please Provide Closed Lost Reason');
+            }
+        }
     }
 }
