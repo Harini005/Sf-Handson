@@ -2,9 +2,10 @@ trigger AccountTrigger on Account (before delete, after delete , after insert, b
     if(Trigger_Invocation__mdt.getInstance('AccountTrigger').Active__c){
         if(Trigger.isBefore){
             if(Trigger.isDelete){
-                AccountTriggerHandler.PreventActiveAccount();
+                AccountTriggerHandler.preventActiveAccount();
                 AccountTriggerHandler.preventContactDeletion();
                 AccountTriggerHandler.preventAccountDeletion();
+                AccountTriggerHandler.preventAccountDeletionWhenOppsReated();
             }
             
             if(Trigger.isUpdate){
