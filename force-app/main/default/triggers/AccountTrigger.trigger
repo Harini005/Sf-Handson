@@ -18,7 +18,8 @@ trigger AccountTrigger on Account (before delete, after delete , after insert, b
         if(Trigger.isAfter){
             if(Trigger.isInsert){
                 AccountTriggerHandler.createRelatedRecords();
-                 AccountTriggerHandler.syncContactPhone();
+                AccountTriggerHandler.syncContactPhone();
+                AccountTriggerHandler.sendEmailToAdmin();
             }
 
             if(Trigger.isUpdate){
