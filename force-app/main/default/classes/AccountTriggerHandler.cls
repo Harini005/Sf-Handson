@@ -3,7 +3,7 @@ public with sharing class AccountTriggerHandler {
     public static final String CLOSED_WON = 'Closed Won';
     public static final Boolean NOT_VALID = false;
     public static final String ADMIN = 'System Administrator';
-
+    
     public static void PreventActiveAccount(){
         List<Account> accounts = (List<Account>) Trigger.old;
         for(Account acc : accounts){
@@ -65,70 +65,92 @@ public with sharing class AccountTriggerHandler {
                 }
             }
             
-    public static void syncContactPhone(){
-        List<Contact> contacts = [select Id,Phone, Account.Phone From Contact Where AccountId IN :Trigger.new];
-        for(Contact con : contacts){
-            if(con.Phone != con.Account.Phone){
-                con.phone = con.Account.Phone;
+            public static void syncContactPhone(){
+                List<Contact> contacts = [select Id,Phone, Account.Phone From Contact Where AccountId IN :Trigger.new];
+                for(Contact con : contacts){
+                    if(con.Phone != con.Account.Phone){
+                        con.phone = con.Account.Phone;
+                    }
+                }
+                update contacts;
+            }
+            
+            public static void updateOpportunities(){
+                Map<Id,Account> newMap = (Map<Id, Account>) Trigger.newMap;
+                Map<Id,Account> oldMap = (Map<Id, Account>) Trigger.oldMap;
+                List<Id> accountIds = new List<Id>();
+                for(Account acc : newMap.values()){
+                    if(acc.Active__c == 'No' && oldMap.get(acc.Id).Active__C != newMap.get(acc.Id).Active__c){
+                        accountIds.add(acc.Id);
+                    }
+                }
+                
+                if(accountIds.isEmpty()){
+                    return;
+                }
+                
+                List<Opportunity> opportunities = [SELECT Id, StageName From Opportunity Where AccountId IN :accountIds And StageName != :CLOSED_WON];
+                
+                for(Opportunity opp : opportunities){
+                    opp.StageName = CLOSED_LOST;
+                    opp.Closed_Lost_Reason__c = 'Account Deactivated';
+                }
+                
+                update opportunities;
+            }
+            
+            public static void preventAccountUpdates(){
+                for(Account acc : (List<Account>) Trigger.new){
+                    Date accoutCreatedDate = System.Today()-7;
+                    if(acc.Do_Not_Update__c && acc.CreatedDate <= accoutCreatedDate){
+                        acc.addError('OOPS! This account can\'t be updated');
+                    }
+                }
+                
+            }
+            
+            public static void preventAccountDeletion(){
+                Profile currentUserProfile = [SELECT Id,Name FROM Profile Where Id = :UserInfo.getProfileId()];
+                if(currentUserProfile.Name != ADMIN){
+                    for(Account acc : (List<Account>) Trigger.old){
+                        acc.addError('You are not authorized to delete the record. Contact your System Admin');
+                    }
                 }
             }
-        update contacts;
-    }
-
-    public static void updateOpportunities(){
-        Map<Id,Account> newMap = (Map<Id, Account>) Trigger.newMap;
-        Map<Id,Account> oldMap = (Map<Id, Account>) Trigger.oldMap;
-        List<Id> accountIds = new List<Id>();
-        for(Account acc : newMap.values()){
-            if(acc.Active__c == 'No' && oldMap.get(acc.Id).Active__C != newMap.get(acc.Id).Active__c){
-                accountIds.add(acc.Id);
+            
+            public static void preventAccountDeletionWhenOppsReated(){
+                List<Account> accounts = (List<Account>) Trigger.old;
+                Map<Id,Account> accountsMap = new Map<Id,Account>([SELECT Id,(Select Id FROM Opportunities),(Select Id From Cases) FROM Account Where Id IN :accounts]);
+                for(Account acc : accounts){
+                    if(!accountsMap.get(acc.Id).Opportunities?.isEmpty()){
+                        acc.addError('Account has Associated Deals');
+                    }
+                    
+                    if(!accountsMap.get(acc.Id).cases?.isEmpty()){
+                        acc.addError('Account has Associated Cases');
+                    }
+                }
+            }
+            
+            public static void sendEmailToAdmin(){
+                List<Account> accounts = (List<Account>) Trigger.new;
+                List<Messaging.SingleEmailMessage> messages = new List<Messaging.SingleEmailMessage>();
+                for(Account acc : accounts){
+                    Messaging.singleEmailMessage message = new Messaging.SingleEmailMessage();
+                    message.setSubject('Account Created');
+                    message.setHtmlBody('Account has been created!!!! Here are the details : <a href='+URL.getOrgDomainUrl()+'/'+acc.Id+'>'+acc.Id+'</a>');
+                    message.setToAddresses(new List<String>{'harinigovindarajan005@gmail.com'});
+                    messages.add(message);
+                }
+                
+                List<Messaging.SendEmailResult> results = Messaging.sendEmail(messages);
+                for(Messaging.sendEmailResult result : results){
+                    if(result.isSuccess()){
+                        System.debug('Email Sent Successfully');
+                    }
+                    if(!result.getErrors().isEmpty()){
+                        System.debug('Errors occured');
+                    }
+                }
             }
         }
-
-        if(accountIds.isEmpty()){
-            return;
-        }
-
-        List<Opportunity> opportunities = [SELECT Id, StageName From Opportunity Where AccountId IN :accountIds And StageName != :CLOSED_WON];
-
-        for(Opportunity opp : opportunities){
-            opp.StageName = CLOSED_LOST;
-            opp.Closed_Lost_Reason__c = 'Account Deactivated';
-        }
-
-        update opportunities;
-    }
-
-    public static void preventAccountUpdates(){
-       for(Account acc : (List<Account>) Trigger.new){
-        Date accoutCreatedDate = System.Today()-7;
-        if(acc.Do_Not_Update__c && acc.CreatedDate <= accoutCreatedDate){
-                acc.addError('OOPS! This account can\'t be updated');
-            }
-        }
-        
-    }
-
-    public static void preventAccountDeletion(){
-        Profile currentUserProfile = [SELECT Id,Name FROM Profile Where Id = :UserInfo.getProfileId()];
-        if(currentUserProfile.Name != ADMIN){
-            for(Account acc : (List<Account>) Trigger.old){
-                acc.addError('You are not authorized to delete the record. Contact your System Admin');
-            }
-        }
-    }
-
-    public static void preventAccountDeletionWhenOppsReated(){
-        List<Account> accounts = (List<Account>) Trigger.old;
-        Map<Id,Account> accountsMap = new Map<Id,Account>([SELECT Id,(Select Id FROM Opportunities),(Select Id From Cases) FROM Account Where Id IN :accounts]);
-        for(Account acc : accounts){
-            if(!accountsMap.get(acc.Id).Opportunities?.isEmpty()){
-                acc.addError('Account has Associated Deals');
-            }
-
-            if(!accountsMap.get(acc.Id).cases?.isEmpty()){
-                acc.addError('Account has Associated Cases');
-            }
-        }
-    }
-}
