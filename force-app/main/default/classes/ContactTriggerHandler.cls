@@ -56,4 +56,17 @@ public with sharing class ContactTriggerHandler {
             }
         }
     }
+    
+    public static void setSalutation(){
+        Map<String,String> genderToSalutations = new Map<String,String>{
+            'Male' => 'Mr.',
+            'Female' => 'Ms.',
+            'Nonbinary' => 'Mx.',
+            'NOt Listed' => 'Mx.'
+        };
+        
+        for(Contact con : (List<Contact> )Trigger.new){
+            con.Salutation = (String.isNotBlank(con.GenderIdentity) ? genderToSalutations.get(con.GenderIdentity) : '');
+        }
+    }
 }
