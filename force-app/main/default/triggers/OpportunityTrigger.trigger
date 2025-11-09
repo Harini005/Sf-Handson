@@ -1,4 +1,4 @@
-trigger OpportunityTrigger on Opportunity (after insert , after update, after delete, after undelete , before update , before delete) {
+trigger OpportunityTrigger on Opportunity (after insert , after update, after delete, after undelete , before update , before delete, before insert) {
    
     if(Trigger_Invocation__mdt.getInstance('OpportunityTrigger').Active__c){
         if(Trigger.isAfter){
@@ -15,6 +15,10 @@ trigger OpportunityTrigger on Opportunity (after insert , after update, after de
 
             if(Trigger.isDelete){
                 OpportunityTriggerHandler.preventClosedDeal();
+            }
+
+            if(Trigger.isBefore){
+                OpportunityTriggerHandler.checkForContact();
             }
         }
     }

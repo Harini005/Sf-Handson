@@ -75,4 +75,30 @@ public with sharing class OpportunityTriggerHandler {
             }
         }
     }
+
+    public static void checkForContact(){
+        Set<Id> accountIds = new Set<Id>();
+
+        for(Opportunity opp : (List<Opportunity>) Trigger.new){
+            accountIds.add(opp.AccountId);
+        }
+        accountIds.remove(null);
+        if(accountIds.isEmpty()){
+            return;
+        }
+       
+        List<Account> accounts = [SELECT Id, (Select Id From Contacts) From Account Where Id IN :accountIds];
+        accountIds.clear();
+        for(Account acc : accounts){
+            if(acc.Contacts == null || acc.Contacts.isEmpty()){
+                accountIds.add(acc.Id);
+            }
+        }
+
+        for(Opportunity opp : (List<Opportunity>)Trigger.new){
+            if(accountIds.contains(opp.AccountId)){
+                opp.addError('Account doesn\'t associated with the contact');
+            }
+        }
+    }
 }
