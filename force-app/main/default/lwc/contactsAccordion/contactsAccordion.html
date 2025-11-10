@@ -1,0 +1,12 @@
+<template>
+    <lightning-card>
+        <lightning-accordion>
+            <template for:each={contacts} for:item="contact">
+                <lightning-accordion-section key={contact.Id} label={contact.Name}>
+                   <lightning-record-form record-id={contact.Id} object-api-name="Contact" layout-type="Full"></lightning-record-form>
+                </lightning-accordion-section>
+            </template>
+        </lightning-accordion>
+        
+    </lightning-card>
+</template>
