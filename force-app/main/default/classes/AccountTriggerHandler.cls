@@ -153,4 +153,14 @@ public with sharing class AccountTriggerHandler {
                     }
                 }
             }
+            
+            public static void preventUpdateFor1Hour(){
+                List<Account> accounts = (List<Account>) Trigger.new;
+                Map<Id,Account> oldMap = (Map<Id,Account>) Trigger.oldMap;
+                for(Account record : accounts){
+                    if(oldMap.get(record.Id).LastModifiedById == UserInfo.getUserId() && oldMap.get(record.Id).LastModifiedDate.addHours(1) >= System.now() && record.hour__c){
+                        record.addError('Wait 1 HOur to update ');
+                    }
+                }
+            }
         }
