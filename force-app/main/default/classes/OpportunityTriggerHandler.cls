@@ -101,4 +101,26 @@ public with sharing class OpportunityTriggerHandler {
             }
         }
     }
+
+    public static void preventOppCreation(){
+        List<Opportunity> opps = (List<Opportunity>) Trigger.new;
+        Set<Id> accountIds = new Set<Id>();
+        for(Opportunity opp : opps){
+            accountIds.add(opp.AccountId);
+        }
+
+        accountIds.remove(null);
+
+        if(accountIds.isEmpty()){
+            return;
+        }
+
+        Map<Id,Account> accounts = new Map<Id,Account>([Select Id, (Select Id From Cases Where CreatedDate >= LAST_N_Days:10 AND isClosed=false) From Account Where Id IN :accountIds]);
+
+        for(Opportunity opp : opps){
+            if(accounts.containsKey(opp.AccountId) && !accounts.get(opp.AccountId).cases.isEmpty()){
+                opp.addError('Can\'t create Opportunity!!!');
+            }
+        }
+    }
 }

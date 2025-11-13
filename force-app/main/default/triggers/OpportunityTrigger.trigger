@@ -17,8 +17,10 @@ trigger OpportunityTrigger on Opportunity (after insert , after update, after de
                 OpportunityTriggerHandler.preventClosedDeal();
             }
 
-            if(Trigger.isBefore){
+            if(Trigger.isInsert){
                 OpportunityTriggerHandler.checkForContact();
+                OpportunityTriggerHandler.preventOppCreation();
+                
             }
         }
     }
