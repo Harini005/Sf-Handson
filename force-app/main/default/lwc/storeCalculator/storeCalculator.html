@@ -1,0 +1,48 @@
+<template>
+    <lightning-card>
+        <blockquote>
+            <template for:each={prodArr} for:item="row">
+                <lightning-layout key={row.id} multiple-rows="true">
+                    <lightning-layout-item size="4" padding="around-small">
+                        <lightning-input type="text" label="Product Name" name="productName" data-id={row.id}
+                            onchange={captureDetails}>
+                        </lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="4" padding="around-small">
+                        <lightning-input type="number" label="Available In Store" name="productavailable"
+                            data-id={row.id} onchange={captureDetails}>
+                        </lightning-input>
+
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="4" padding="around-small">
+                        <lightning-input type="number" label="Each Price" name="productPrice" data-id={row.id}
+                            onchange={captureDetails}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </template>
+        </blockquote>
+        <blockquote>
+            <template lwc:if={value}>
+                <p class="slds-text-color_success slds-text-heading_large slds-text-align_center">{value}</p>
+            </template>
+        </blockquote>
+        <lightning-layout>
+            <lightning-layout-item size="2" padding="slds-medium">
+                <blockquote>
+                    <lightning-button icon-name="utility:add" onclick={addRows}>
+                    </lightning-button>
+                </blockquote>
+            </lightning-layout-item>
+            <lightning-layout-item size="2" padding="slds-medium">
+
+                <blockquote style="margin: 0 auto">
+                    <lightning-button label="Calculate" onclick={buttonHandler}>
+                    </lightning-button>
+                </blockquote>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-card>
+</template>
