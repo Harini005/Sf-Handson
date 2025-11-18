@@ -192,3 +192,33 @@ let discountToLast3 = peopleInQueue.slice(-3).map(item => {
     return { [item.customer]: item.total - item.total * 0.1 };
 })
 console.log(discountToLast3);
+
+let charArr = ['h', 'a', 'r', 'i', 'n'];
+let sortedArr = charArr.sort();
+console.log(sortedArr);
+
+let numArr = [2, 1, 150, 250, 350, 3, 6];
+let numSortedArr = numArr.sort(); //sorts with first integer of the number
+console.log(numSortedArr);
+
+let ascSortedArr = numArr.sort((a, b) => a - b);
+console.log(ascSortedArr);
+
+let descSortedArr = numArr.sort((a, b) => b - a);
+console.log(descSortedArr);
+
+let concatedArr = charArr.concat(numArr);
+console.log(concatedArr);
+
+let newArr = Array(5);
+console.log(newArr);
+
+let filledNewArr = newArr.fill(0, 0, 5);
+console.log(filledNewArr);
+
+let namesArr = ['Stephan', 'damon', 'klaus', 'Ellijah', 'Elena', 'jeremy'];
+console.log(namesArr.includes('Stephan'));
+console.log(namesArr.includes('Damon')); //includes is case sensitive
+
+let reversedNamesArr = namesArr.reverse();
+console.log(reversedNamesArr);
