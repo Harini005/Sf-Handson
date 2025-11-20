@@ -222,3 +222,50 @@ console.log(namesArr.includes('Damon')); //includes is case sensitive
 
 let reversedNamesArr = namesArr.reverse();
 console.log(reversedNamesArr);
+
+console.log(reversedNamesArr.indexOf('Stephan'));
+console.log(reversedNamesArr.indexOf('stephan'));
+
+let alpha = ['a', 'a', 'b', 'a', 'b'];
+console.log(alpha.lastIndexOf('a'));
+
+let ageArr = [
+    {
+        name: 'Test 1', 
+        age : 5
+    },
+    {
+        name: 'Stephan 2',
+        age: 20
+    },
+    {
+        name: 'Test 3',
+        age: 25
+    },
+    {
+        name: 'Test 4',
+        age: 18
+    }
+]
+
+let findStephan = ageArr.find(item => item.name.includes('Test'));
+console.log(ageArr);
+
+let findIndex = ageArr.findIndex(item => item.name.includes('Stephan'));
+console.log(findIndex);
+
+let arrResult = ageArr.every(item => item.age > 18);
+console.log(arrResult);
+
+let someResult = ageArr.some(item => item.age > 18);
+console.log(someResult);
+
+
+let mySet = new Set([1, 2, 3, 4, 1]);
+console.log(mySet);
+
+let myArr = Array.from(mySet);
+console.log(myArr); 
+
+console.log(Array.isArray(myArr));
+console.log(Array.isArray(mySet));
