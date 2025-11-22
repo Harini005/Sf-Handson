@@ -69,4 +69,36 @@ public with sharing class ContactTriggerHandler {
             con.Salutation = (String.isNotBlank(con.GenderIdentity) ? genderToSalutations.get(con.GenderIdentity) : '');
         }
     }
+    
+    public static void validatePrimaryContact(){
+        List<Contact> contacts = (List<Contact>) Trigger.new;
+        Set<Id> accountIds = new Set<Id>();
+        for(Contact record : contacts){
+            accountIds.add(record.AccountId);
+        }
+        accountIds.remove(null);
+        
+        if(accountIds.isEmpty()){
+            return;
+        }
+        
+        Map<Id, Account> accounts =new Map<Id,Account>( [SELECT Id, (SELECT Id From Contacts Where Primary_Contact__c = true) from Account Where Id IN :accountIds]);
+        
+        for(Contact record: contacts){
+            if(!accounts.containsKey(record.AccountId)){
+                return;
+            }
+            if(accounts.containsKey(record.AccountId) ){
+                if(accounts.get(record.AccountId).Contacts.isEmpty()){
+                    return;
+                }
+                else if(record.Primary_Contact__c){
+                    record.addError('Primary Contact Exsists on this Account');
+                }
+            }
+            
+            
+        }
+        
+    }
 }
