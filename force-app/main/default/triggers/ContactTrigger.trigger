@@ -8,6 +8,7 @@ trigger ContactTrigger on Contact (after insert, after update , before insert, b
             
             if(Trigger.isInsert){
                 ContactTriggerHandler.createAccount();
+                ContactTriggerHandler.validatePrimaryContact();
             }
         }
         
