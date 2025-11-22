@@ -231,8 +231,8 @@ console.log(alpha.lastIndexOf('a'));
 
 let ageArr = [
     {
-        name: 'Test 1', 
-        age : 5
+        name: 'Test 1',
+        age: 5
     },
     {
         name: 'Stephan 2',
@@ -265,7 +265,59 @@ let mySet = new Set([1, 2, 3, 4, 1]);
 console.log(mySet);
 
 let myArr = Array.from(mySet);
-console.log(myArr); 
+console.log(myArr);
 
 console.log(Array.isArray(myArr));
 console.log(Array.isArray(mySet));
+
+
+
+let friendsArr = ['Joey', 'Rachel', 'Ross', 'Pheobe', 'Chandler', 'Monica'];
+for (let friend of friendsArr) {
+    console.log(friend);
+}
+
+for (let friend in friendsArr) {
+    console.log(Number(friend) + 1, friendsArr[friend]);
+}
+
+let bingBangObj = [
+    {
+        'character': 'Sheldon'
+    },
+    {
+        'character': 'Amy'
+    },
+    {
+        'character': 'Raj'
+    },
+    {
+        'character': 'Penny'
+    },
+    {
+        'character': 'Lenord'
+    }
+];
+
+for (let [idx, value] of Object.entries(bingBangObj)) {
+    console.log(idx, value);
+}
+
+let nameObj = {
+    fname: 'Sheldon',
+    lname: 'cooper'
+};
+
+for (let [fname, lname] of Object.entries(nameObj)) {
+    console.log(fname, lname);
+}
+
+for (let idx in nameObj) {
+    console.log(nameObj[idx]);
+}
+
+
+let arr4 = [['a', 'b', 'c'], 'd', 'e', 'f'];
+let arr5 = arr4.flat(Infinity);
+console.log(arr5);
+console.log(arr4);
