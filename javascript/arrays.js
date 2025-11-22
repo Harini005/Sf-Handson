@@ -192,3 +192,80 @@ let discountToLast3 = peopleInQueue.slice(-3).map(item => {
     return { [item.customer]: item.total - item.total * 0.1 };
 })
 console.log(discountToLast3);
+
+let charArr = ['h', 'a', 'r', 'i', 'n'];
+let sortedArr = charArr.sort();
+console.log(sortedArr);
+
+let numArr = [2, 1, 150, 250, 350, 3, 6];
+let numSortedArr = numArr.sort(); //sorts with first integer of the number
+console.log(numSortedArr);
+
+let ascSortedArr = numArr.sort((a, b) => a - b);
+console.log(ascSortedArr);
+
+let descSortedArr = numArr.sort((a, b) => b - a);
+console.log(descSortedArr);
+
+let concatedArr = charArr.concat(numArr);
+console.log(concatedArr);
+
+let newArr = Array(5);
+console.log(newArr);
+
+let filledNewArr = newArr.fill(0, 0, 5);
+console.log(filledNewArr);
+
+let namesArr = ['Stephan', 'damon', 'klaus', 'Ellijah', 'Elena', 'jeremy'];
+console.log(namesArr.includes('Stephan'));
+console.log(namesArr.includes('Damon')); //includes is case sensitive
+
+let reversedNamesArr = namesArr.reverse();
+console.log(reversedNamesArr);
+
+console.log(reversedNamesArr.indexOf('Stephan'));
+console.log(reversedNamesArr.indexOf('stephan'));
+
+let alpha = ['a', 'a', 'b', 'a', 'b'];
+console.log(alpha.lastIndexOf('a'));
+
+let ageArr = [
+    {
+        name: 'Test 1', 
+        age : 5
+    },
+    {
+        name: 'Stephan 2',
+        age: 20
+    },
+    {
+        name: 'Test 3',
+        age: 25
+    },
+    {
+        name: 'Test 4',
+        age: 18
+    }
+]
+
+let findStephan = ageArr.find(item => item.name.includes('Test'));
+console.log(ageArr);
+
+let findIndex = ageArr.findIndex(item => item.name.includes('Stephan'));
+console.log(findIndex);
+
+let arrResult = ageArr.every(item => item.age > 18);
+console.log(arrResult);
+
+let someResult = ageArr.some(item => item.age > 18);
+console.log(someResult);
+
+
+let mySet = new Set([1, 2, 3, 4, 1]);
+console.log(mySet);
+
+let myArr = Array.from(mySet);
+console.log(myArr); 
+
+console.log(Array.isArray(myArr));
+console.log(Array.isArray(mySet));
