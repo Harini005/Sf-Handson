@@ -153,4 +153,32 @@ public with sharing class OpportunityTriggerHandler {
 
         update accountsToUpdate;
     }
+
+      public static void validateCloseOpportunitiesOnAccount(){
+                List<Opportunity> recordsList = (List<Opportunity>) Trigger.new;
+                Map<Id, Opportunity> oldMap = (Map<Id, Opportunity>) Trigger.oldMap;
+                Set<Id> accountIds = new Set<Id>();
+                
+                for(Opportunity record : recordsList){
+                    accountIds.add(record.AccountId);
+                }
+                
+                if(accountIds.isEmpty()){
+                    return;
+                }
+                
+                Map<Id, Account> accounts = new Map<Id, Account>([SELECT Id, Close_Opportunities__c from Account Where Id IN :accountIds]);
+                
+                for(Opportunity record : recordsList){
+                    if(accounts.containsKey(record.AccountId) && accounts.get(record.AccountId).Close_Opportunities__c && record.Probability >= 70){
+                        if(oldMap == null){
+                            record.StageName = 'Closed Won';
+                            return;
+                        }
+                        else if(record.StageName != oldMap.get(record.Id).StageName){
+                            record.StageName = 'Closed Won';
+                        }
+                    }
+                }
+            }
 }

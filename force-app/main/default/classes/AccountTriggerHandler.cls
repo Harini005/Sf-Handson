@@ -163,4 +163,41 @@ public with sharing class AccountTriggerHandler {
                     }
                 }
             }
+            
+            
+            public static void validateCloseOpportunities(){
+                Map<Id, Account> newMap = (Map<Id, Account>) Trigger.newMap;
+                Map<Id, Account> oldMap = (Map<Id, Account>) Trigger.oldMap;
+                
+                List<Id> accountIds = new List<Id>();
+                for(Account record : newMap.values()){
+                    if(record.Close_Opportunities__c){
+                        if(oldMap == null){
+                            accountIds.add(record.Id);
+                            return;
+                        }
+                        else if(record.Close_Opportunities__c != oldMap.get(record.Id).Close_Opportunities__c){
+                            accountIds.add(record.Id);
+                        }
+                    }
+                }
+                
+                if(accountIds.isEmpty()){
+                    return;
+                }
+                
+                List<Opportunity> opportunities = [SELECT Id,StageName FROM Opportunity Where AccountId IN :accountIds AND Probability >= 70];
+                
+                if(opportunities.isEmpty()){
+                    return;
+                }
+                
+                
+                for(Opportunity opp : opportunities){
+                    opp.StageName = 'closed Won';
+                }
+                
+                update opportunities;
+            }
+            
         }
