@@ -22,6 +22,7 @@ trigger AccountTrigger on Account (before delete, after delete , after insert, b
                 AccountTriggerHandler.syncContactPhone();
                 AccountTriggerHandler.sendEmailToAdmin();
                 AccountTriggerHandler.validateCloseOpportunities();
+                AccountTriggerHandler.updateClientContact();
             }
             
             if(Trigger.isUpdate){

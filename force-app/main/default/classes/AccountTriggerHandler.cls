@@ -199,5 +199,31 @@ public with sharing class AccountTriggerHandler {
                 
                 update opportunities;
             }
+
+            public  static void updateClientContact(){
+                Map<Id, Account> newMap = (Map<Id, Account>) Trigger.newMap;
+                List<Contact> contacts = [SELECT Id, AccountId From Contact Where AccountId IN :newMap.KeySet()];
+                Map<Id, Contact> accountIdToContactMap = new Map<Id, Contact>();
+                List<Account> accounts = new List<Account>();
+
+                if(contacts.isEmpty()){
+                    return;
+                }
+
+                for(Contact record : contacts){
+                    accountIdToContactMap.put(record.AccountId, record);
+                }
+
+                for(Id accountId : newMap.keySet()){
+                    if(!accountIdToContactMap.containsKey(accountId)){
+                        continue;
+                    }
+                    
+                    accounts.add(new Account(Id=accountId , Client_Contact__c = accountIdToContactMap.get(accountId).Id));
+                }
+
+                update accounts;
+                
+            }
             
         }
