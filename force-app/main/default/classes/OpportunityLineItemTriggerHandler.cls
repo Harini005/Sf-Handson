@@ -1,9 +1,9 @@
 public with sharing class OpportunityLineItemTriggerHandler{
     
     
-   public static void updateAccount(Map<Id, OpportunityLineItem> newMap , Map<Id, OpportunityLineItem> oldMap){
+    public static void updateAccount(Map<Id, OpportunityLineItem> newMap , Map<Id, OpportunityLineItem> oldMap){
         Boolean isUpdate = false;
-    
+        
         List<OpportunityLineItem> records = new List<OpportunityLineItem>();
         set<Id> oppIds = new set<Id>();
         
@@ -33,12 +33,42 @@ public with sharing class OpportunityLineItemTriggerHandler{
         }
         List<Account> accounts = new List<Account>();
         Map<Id, Opportunity> opportunities = new Map<Id, Opportunity>([SELECT Id, AccountId from Opportunity Where Id IN :oppIds]);
-        List<AggregateResult> results = [SELECT Count(Id) records, OpportunityId oppId from OpportunityLineItem Where OpportunityId IN :oppIds Group By OpportunityId]; 
 
+        if(accounts.isEmpty()){
+            return;
+        }
+
+        List<AggregateResult> results = [SELECT Count(Id) records, OpportunityId oppId from OpportunityLineItem Where OpportunityId IN :oppIds Group By OpportunityId];
+        
         for(AggregateResult result : results){
             accounts.add(new Account(Id=opportunities.get((Id)result.get('oppId')).AccountId, No_Of_OLI__c = (Integer)result.get('records')));
         }
-
+        
         update accounts;
+    }
+    
+    public static void createAsset(){
+        Map<Id, OpportunityLineItem> oppLineItems = (Map<Id, OpportunityLineItem>) Trigger.newMap;
+        List<Asset> assets = new List<Asset>();
+        
+        Map<Id, Opportunity> opportunities = new Map<Id, Opportunity>([SELECT Id, AccountId, Account.Name From Opportunity Where Id IN (SELECT OpportunityId From OpportunityLineItem Where Id IN :oppLineItems.values() AND Id!=Null)]);
+      
+        if(opportunities.isEmpty()){
+            return;
+        }
+        
+        for(OpportunityLineItem item : oppLineItems.values()){
+            if(String.isBlank(Opportunities.get(item.OpportunityId).AccountId)){
+                continue;
+            }
+
+            assets.add(new Asset(
+                Name = opportunities.get(item.opportunityId).Account.Name+ ' Asset' ,
+            AccountId =opportunities.get(item.opportunityId).AccountId ,
+            Product2Id = item.product2Id
+                ));
+        }
+        
+        insert assets;
     }
 }
