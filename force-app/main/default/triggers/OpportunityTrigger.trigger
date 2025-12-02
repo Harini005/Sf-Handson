@@ -12,6 +12,7 @@ trigger OpportunityTrigger on Opportunity (after insert , after update, after de
         if(Trigger.isBefore){
             if(Trigger.isUpdate){
                 OpportunityTriggerHandler.validateClosedLostReason();
+                OpportunityTriggerHandler.validateCloseOpportunitiesOnAccount();
             }
 
             if(Trigger.isDelete){
@@ -21,6 +22,7 @@ trigger OpportunityTrigger on Opportunity (after insert , after update, after de
             if(Trigger.isInsert){
                 OpportunityTriggerHandler.checkForContact();
                 OpportunityTriggerHandler.preventOppCreation();
+                OpportunityTriggerHandler.validateCloseOpportunitiesOnAccount();
                 
             }
         }
