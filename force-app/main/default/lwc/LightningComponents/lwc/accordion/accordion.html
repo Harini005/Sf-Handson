@@ -1,0 +1,23 @@
+<template>
+    <lightning-card>
+        <blockquote>
+            <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}
+                onsectiontoggle={captureHeaders}>
+                <lightning-accordion-section label="FAQs" name="FAQs" data-label="FAQs" onclick={clickHandler}>
+                    <lightning-button-icon icon-name="action:close" onclick={buttonHandler}
+                        data-label="FAQs"></lightning-button-icon>
+                    <p>How do I reset my password?</p>
+                    <p>How can I track my order?</p>
+                    <p>What is your refund policy?</p>
+                </lightning-accordion-section>
+                <lightning-accordion-section name="productDetails" label="Product Details">
+                    <lightning-button-icon icon-name="action:close" onclick={buttonHandler}
+                        data-label="productDetails"></lightning-button-icon>
+                    <p>Product Specifications</p>
+                    <p>Customer Reviews</p>
+                    <p>Shipping Information</p>
+                </lightning-accordion-section>
+            </lightning-accordion>
+        </blockquote>
+    </lightning-card>
+</template>
