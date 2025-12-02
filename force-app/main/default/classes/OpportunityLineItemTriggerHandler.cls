@@ -33,11 +33,11 @@ public with sharing class OpportunityLineItemTriggerHandler{
         }
         List<Account> accounts = new List<Account>();
         Map<Id, Opportunity> opportunities = new Map<Id, Opportunity>([SELECT Id, AccountId from Opportunity Where Id IN :oppIds]);
-
+        
         if(accounts.isEmpty()){
             return;
         }
-
+        
         List<AggregateResult> results = [SELECT Count(Id) records, OpportunityId oppId from OpportunityLineItem Where OpportunityId IN :oppIds Group By OpportunityId];
         
         for(AggregateResult result : results){
@@ -52,7 +52,7 @@ public with sharing class OpportunityLineItemTriggerHandler{
         List<Asset> assets = new List<Asset>();
         
         Map<Id, Opportunity> opportunities = new Map<Id, Opportunity>([SELECT Id, AccountId, Account.Name From Opportunity Where Id IN (SELECT OpportunityId From OpportunityLineItem Where Id IN :oppLineItems.values() AND Id!=Null)]);
-      
+        
         if(opportunities.isEmpty()){
             return;
         }
@@ -61,7 +61,7 @@ public with sharing class OpportunityLineItemTriggerHandler{
             if(String.isBlank(Opportunities.get(item.OpportunityId).AccountId)){
                 continue;
             }
-
+            
             assets.add(new Asset(
                 Name = opportunities.get(item.opportunityId).Account.Name+ ' Asset' ,
             AccountId =opportunities.get(item.opportunityId).AccountId ,
@@ -70,5 +70,24 @@ public with sharing class OpportunityLineItemTriggerHandler{
         }
         
         insert assets;
+    }
+    
+    public static void validateProductFamily(){
+        List<OpportunityLineItem> items = (List<OpportunityLineItem>)Trigger.new;
+        Set<Id> oppIds = new Set<Id>();
+        Set<Id> prodIds = new Set<Id>();
+        for(OpportunityLineItem item : items){
+            oppIds.add(item.OpportunityId);
+            prodIds.add(item.Product2Id);
+        }
+        
+        Map<Id, Opportunity> opps = new Map<Id, Opportunity>([SELECT Id, Product_Family__c From Opportunity Where Id In :oppIds]);
+        Map<Id, Product2> prods = new Map<Id, Product2>([SELECT Id, Family From Product2 Where Id In :prodIds]);
+        
+        for(OpportunityLineItem item : items){
+            if(opps.get(item.opportunityId).Product_Family__c != prods.get(item.product2Id).Family ){
+                item.addError('MisMatch in Product Family on Deal and Product');
+            }
+        }
     }
 }
