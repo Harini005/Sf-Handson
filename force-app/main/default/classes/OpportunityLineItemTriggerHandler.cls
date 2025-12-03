@@ -90,4 +90,43 @@ public with sharing class OpportunityLineItemTriggerHandler{
             }
         }
     }
+    
+    public static void updateHigherItemsOnAccount(){
+        Map<Id, OpportunityLineItem> newMap = (Map<Id, OpportunityLineItem>) Trigger.newMap;
+        Map<Id, OpportunityLineItem> oldMap = (Map<Id, OpportunityLineItem>) Trigger.oldMap;
+        List<OpportunityLineItem> records = (newMap == null )? oldMap.values() : newMap.values();
+        List<Account> accounts = new List<Account>();
+         Map<Id,Opportunity> opportunities = new Map<Id, Opportunity>();
+         String query;
+        if(!Trigger.isDelete){
+           opportunities.putAll( [Select Id, AccountId From Opportunity Where Id IN (Select OpportunityId From OpportunityLineItem Where Id IN :records And ListPrice >= 50000)]);
+            query = 'Select Id, AccountId From Opportunity Where Id IN (Select OpportunityId From OpportunityLineItem Where Id IN :records And ListPrice >= 50000 )Group By OpportunityId';
+          
+        }
+        else{
+            opportunities.putAll([Select Id, AccountId From Opportunity Where Id IN (Select OpportunityId From OpportunityLineItem Where Id IN :records And ListPrice >= 50000)]);
+            query = 'Select Id, AccountId From Opportunity Where Id IN (Select OpportunityId From OpportunityLineItem Where Id IN :records And ListPrice >= 50000) Group By OpportunityId';
+
+        }
+
+          if(opportunities.isEmpty()){
+                return;
+            }
+        
+        List<AggregateResult> results = [SELECT count(Id) con, OpportunityId oppId from OpportunityLineItem WHere OpportunityId IN :opportunities.keySet() AND ListPrice >=50000 Group By OpportunityId];
+        
+        for(AggregateResult result : results){
+            if(String.isBlank(opportunities.get((Id)result.get('oppId')).AccountId)){
+                continue;
+            }
+            accounts.add(new Account(Id=opportunities.get((Id)result.get('oppId')).AccountId , High_Value_Items__c = (Integer) result.get('con')));
+        }
+        
+        if(accounts.isEmpty()){
+            return;
+        }
+        
+        update accounts;
+        
+    }
 }
