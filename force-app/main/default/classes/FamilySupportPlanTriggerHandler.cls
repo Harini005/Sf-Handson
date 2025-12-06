@@ -27,4 +27,23 @@ public with sharing class FamilySupportPlanTriggerHandler {
         
         insert tasks;
     }
+
+    public static void updateVillageSupportPlan(Map<Id, CAMPX__Family_Support_Plan__c> newMap , Map<Id, CAMPX__Family_Support_Plan__c> oldMap){
+        List<CAMPX__Village_Task__c> villageTasks = [Select CAMPX__Support_Phase__c,CAMPX__Family_Support_Plan__c From CAMPX__Village_Task__c where CAMPX__Family_Support_Plan__c IN :newMap.keySet()];
+        List<CAMPX__Village_Task__c> tasksToUpdate = new List<CAMPX__Village_Task__c>();
+
+        if(villageTasks.isEmpty()){
+            return;
+        }
+
+        for(CAMPX__Village_Task__c villageTask : villageTasks){
+            if(oldMap.get(villageTask.CAMPX__Family_Support_Plan__c).CAMPX__Phase__c != newMap.get(villageTask.CAMPX__Family_Support_Plan__c).CAMPX__Phase__c){
+                tasksToUpdate.add(new CAMPX__Village_Task__c(Id=villageTask.Id , CAMPX__Support_Phase__c= newMap.get(villageTask.CAMPX__Family_Support_Plan__c).CAMPX__Phase__c));
+            }
+        }
+
+        update tasksToUpdate;
+
+       
+    }
 }
