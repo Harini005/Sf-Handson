@@ -1,0 +1,16 @@
+.boxStyling{
+    border: 0.5px solid gainsboro;
+    background-color:rgba(255, 105, 180, 0.601);
+    color:ghostwhite;
+    margin : 2px;
+    text-align : center;
+    font-weight: 500;
+
+}
+
+.boxStyling:hover{
+    background-color:ghostwhite;
+    color: rgba(255, 105, 180, 0.601);
+    cursor: pointer;
+    font-weight: 500;
+}
