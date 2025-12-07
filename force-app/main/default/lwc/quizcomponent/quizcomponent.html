@@ -1,0 +1,25 @@
+<template>
+    <lightning-card>
+        <p class="slds-text-heading_large slds-text-align_center slds-text-color_success"> Quiz - 1</p>
+        <blockquote>
+            <div>
+                <b>{question.id}. {question.question}</b>
+                <template for:each={question.options} for:item="option" for:index="idx">
+                    <lightning-input name={question.id} label={option} key={option} type="radio"
+                        oninput={optionHandler}></lightning-input>
+                </template>
+            </div>
+        </blockquote>
+        <footer slot="footer">
+            <template lwc:if={previousButton}>
+                <lightning-button label="Previous" onclick={buttonHandler}></lightning-button>
+            </template>
+            <template lwc:if={nextButton}>
+                <lightning-button label="Next" onclick={buttonHandler}></lightning-button>
+            </template>
+            <template lwc:if={submitButton}>
+                <lightning-button label="Submit" onclick={buttonHandler}></lightning-button>
+            </template>
+        </footer>
+    </lightning-card>
+</template>

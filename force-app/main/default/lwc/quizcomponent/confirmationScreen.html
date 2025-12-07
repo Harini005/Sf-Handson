@@ -1,0 +1,30 @@
+<template>
+    <lightning-card>
+        <p class="slds-text-heading_medium slds-text-align_center"> You are about to Submit the test</p>
+
+        <template lwc:if={displayScreen}>
+            <pre class="slds-text-align_center slds-text-body_large slds-m-top_large">
+            <a onclick={backToTest}>Want to go back? </a>
+            <a onclick={Review}> Review </a>
+            </pre>
+        </template>
+
+        <template lwc:else>
+            <template for:each={reviewOptions} for:item="selectedOptions">
+                <div key={selectedOptions}>
+                    <pre>
+                        <blockquote>
+                            <p>{selectedOptions}</p>
+                        </blockquote>
+                    </pre>
+                </div>
+            </template>
+        </template>
+
+        <footer slot="footer">
+            <lightning-button label="Submit" onclick={submitTest}></lightning-button>
+        </footer>
+
+
+    </lightning-card>
+</template>
