@@ -46,4 +46,18 @@ public with sharing class FamilySupportPlanTriggerHandler {
 
        
     }
+
+    public static void beforeDelete(List<CAMPX__Family_Support_Plan__c> records){
+        Map<Id, CAMPX__Family_Support_Plan__c> recordMap = new Map<Id, CAMPX__Family_Support_Plan__c>([Select Id, (select Id from CAMPX__Village_Tasks__r ) from CAMPX__Family_Support_Plan__c where CAMPX__Priority__c = :HIGH AND ID IN :records]);
+        
+        if(recordMap.isEmpty()){
+            return;
+        }
+
+        for(CAMPX__Family_Support_Plan__c record : records){
+            if(recordMap.containsKey(record.Id) && !recordMap.get(record.Id).CAMPX__Village_Tasks__r.isEmpty()){
+                record.addError('Cannot delete a high-priority plan that has related tasks. Please remove all tasks first.');
+            }
+        }
+    }
 }
