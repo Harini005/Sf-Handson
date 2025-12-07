@@ -181,4 +181,20 @@ public with sharing class OpportunityTriggerHandler {
                     }
                 }
             }
+
+    public static void updateRatingOnAccount(){
+        Map<Id, Opportunity> newMap = (Map<Id, Opportunity>) Trigger.newMap;
+        Map<Id, Opportunity> oldMap = (Map<Id, Opportunity>) Trigger.oldMap;
+        List<Opportunity> records = (newMap == null) ? oldMap.values() : newMap.values();
+        List<Account> accounts = new List<Account>();
+        List<AggregateResult> results = [SELECT AccountId accId, Sum(Amount) amount From Opportunity Where Id IN :records Group BY AccountId];
+
+        for(AggregateResult result : results){
+            Double amount = (Double)result.get('amount');
+            String rating = (amount <= 5000) ? 'Cold' : ((amount >5000 && amount < 100000) ? 'Warm' : 'Hot');
+            accounts.add(new Account(Id=(Id)result.get('accId'), Rating= rating));
+        }
+
+        update accounts;
+    }
 }
