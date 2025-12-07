@@ -1,0 +1,21 @@
+<template>
+    <lightning-card>
+        <blockquote>
+            <template lwc:if={isDisabled}>
+                <lightning-input label="Name" type="text" value={info.name} onchange={trackChanges}></lightning-input>
+                <lightning-input label="Location" type="text" value={info.location}
+                    onchange={trackChanges}></lightning-input>
+                <lightning-input label="Company" type="text" value={info.company}
+                    onchange={trackChanges}></lightning-input>
+            </template>
+            <template lwc:else>
+                <p>Hello!! My Name is <b>{info.name}</b>. I'm currently located in <i>{info.location}</i> and working in
+                    <i> {info.company}</i>
+                </p>
+            </template>
+        </blockquote>
+        <footer slot="footer">
+            <lightning-button label={buttonLabel} onclick={buttonHandler}></lightning-button>
+        </footer>
+    </lightning-card>
+</template>
