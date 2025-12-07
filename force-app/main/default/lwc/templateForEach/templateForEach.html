@@ -1,0 +1,11 @@
+<template>
+    <lightning-card>
+        <blockquote>
+            <template for:each={fruits} for:item="fruit">
+                <div class="boxStyling" key={fruit}>
+                   <p>{fruit}</p> 
+                </div>
+            </template>
+        </blockquote>
+    </lightning-card>
+</template>
