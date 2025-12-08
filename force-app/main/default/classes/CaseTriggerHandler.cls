@@ -23,7 +23,7 @@ public with sharing class CaseTriggerHandler {
 
         List<Case> records = (oldMap == null) ? newMap.values() : oldMap.values();
         List<Id> accountIds = new List<Id>();
-        List<Account> accounts = new List<Account>(); 
+        Map<Id,Account> accounts = new  Map<Id,Account>(); 
 
         for(Case record : records){
             accountIds.add(record.AccountId);
@@ -36,26 +36,34 @@ public with sharing class CaseTriggerHandler {
         List<AggregateResult> results = [SELECT count(Id) records , Status status, AccountId accId From Case Where AccountId IN :accountIds Group By AccountId, status];
 
         for(AggregateResult res : results){
-            Account acc = new Account();
-            acc.Id = (Id) res.get('accId');
+            Id accuontId= (Id) res.get('accId');
+            Account acc;
+            if(accounts.containsKey(accuontId)){
+                acc = accounts.get(accuontId);
+            }
+            else{
+                acc = new Account(Id=accuontId);
+            }
+            
             switch on (string)res.get('status'){
                 when 'New'{
                     acc.New_Cases__c = (Integer) res.get('records');
-                    return;
+                    
                 }
                 when 'Working'{
-                    acc.New_Cases__c = (Integer) res.get('records');
-                    return;
+                    acc.Working_Cases__c = (Integer) res.get('records');
+                    
                 }
                 when 'Escalated'{
-                    acc.New_Cases__c = (Integer) res.get('records');
-                    return;
+                    acc.Escalated_Cases__c = (Integer) res.get('records');
+                
                 }
             }
-            accounts.add(acc);
+            accounts.put(acc.Id,acc);
+            system.debug(accounts);
         }
 
-        update accounts;
+        update accounts.values();
     }
 
       public static void activateAccountContact(){
