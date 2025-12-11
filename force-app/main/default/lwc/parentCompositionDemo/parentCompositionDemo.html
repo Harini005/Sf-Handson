@@ -1,0 +1,12 @@
+<template>
+    <lightning-card title="Parent Card">
+        <lightning-button label={buttonLabel} slot="actions" onclick={buttonHandler}></lightning-button>
+        <p>Hello From the Parent Card !!! </p>
+        <template lwc:if={showChild}>
+            <c-child-composition-demo></c-child-composition-demo>
+        </template>
+        <footer slot="footer">
+            <p>This is the composition Demo</p>
+        </footer>
+    </lightning-card>
+</template>
