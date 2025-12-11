@@ -12,7 +12,7 @@ trigger AccountTrigger on Account (before delete, after delete , after insert, b
                 AccountTriggerHandler.setDescription();
                 AccountTriggerHandler.preventAccountUpdates();
                 AccountTriggerHandler.preventUpdateFor1Hour();
-                
+               
             }
         }
         
@@ -21,14 +21,12 @@ trigger AccountTrigger on Account (before delete, after delete , after insert, b
                 AccountTriggerHandler.createRelatedRecords();
                 AccountTriggerHandler.syncContactPhone();
                 AccountTriggerHandler.sendEmailToAdmin();
-                AccountTriggerHandler.validateCloseOpportunities();
-                AccountTriggerHandler.updateClientContact();
             }
-            
+
             if(Trigger.isUpdate){
-                AccountTriggerHandler.syncContactPhone();
-                AccountTriggerHandler.updateOpportunities();
-                AccountTriggerHandler.validateCloseOpportunities();
+                 AccountTriggerHandler.syncContactPhone();
+                 AccountTriggerHandler.updateOpportunities();
+                 AccountTriggerHandler.updateRelatedRecords();
             }
         }
     }
