@@ -3,6 +3,8 @@ public with sharing class AccountTriggerHandler {
     public static final String CLOSED_WON = 'Closed Won';
     public static final Boolean NOT_VALID = false;
     public static final String ADMIN = 'System Administrator';
+    Public static final String YES = 'Yes';
+    public static final String NO = 'No';
     
     public static void PreventActiveAccount(){
         List<Account> accounts = (List<Account>) Trigger.old;
@@ -164,21 +166,14 @@ public with sharing class AccountTriggerHandler {
                 }
             }
             
-            
-            public static void validateCloseOpportunities(){
-                Map<Id, Account> newMap = (Map<Id, Account>) Trigger.newMap;
+            public static void updateRelatedRecords(){
+                Map<Id, Account> newMap = (Map<Id,Account>) Trigger.newMap;
                 Map<Id, Account> oldMap = (Map<Id, Account>) Trigger.oldMap;
-                
                 List<Id> accountIds = new List<Id>();
+                
                 for(Account record : newMap.values()){
-                    if(record.Close_Opportunities__c){
-                        if(oldMap == null){
-                            accountIds.add(record.Id);
-                            return;
-                        }
-                        else if(record.Close_Opportunities__c != oldMap.get(record.Id).Close_Opportunities__c){
-                            accountIds.add(record.Id);
-                        }
+                    if(record.Active__c == NO && oldMap.get(record.Id).Active__c != newMap.get(record.Id).Active__c){
+                        accountIds.add(record.Id);
                     }
                 }
                 
@@ -186,44 +181,12 @@ public with sharing class AccountTriggerHandler {
                     return;
                 }
                 
-                List<Opportunity> opportunities = [SELECT Id,StageName FROM Opportunity Where AccountId IN :accountIds AND Probability >= 70];
-                
-                if(opportunities.isEmpty()){
-                    return;
+                List<contact> contacts = [Select Id, Do_Not_Update__c From Contact Where AccountId IN :accountIds];
+                for(Contact con : contacts){
+                    con.Do_Not_Update__c = true;
                 }
                 
-                
-                for(Opportunity opp : opportunities){
-                    opp.StageName = 'closed Won';
-                }
-                
-                update opportunities;
+                update contacts;
+                delete [Select Id From Opportunity where AccountId IN :accountIds];
             }
-
-            public  static void updateClientContact(){
-                Map<Id, Account> newMap = (Map<Id, Account>) Trigger.newMap;
-                List<Contact> contacts = [SELECT Id, AccountId From Contact Where AccountId IN :newMap.KeySet()];
-                Map<Id, Contact> accountIdToContactMap = new Map<Id, Contact>();
-                List<Account> accounts = new List<Account>();
-
-                if(contacts.isEmpty()){
-                    return;
-                }
-
-                for(Contact record : contacts){
-                    accountIdToContactMap.put(record.AccountId, record);
-                }
-
-                for(Id accountId : newMap.keySet()){
-                    if(!accountIdToContactMap.containsKey(accountId)){
-                        continue;
-                    }
-                    
-                    accounts.add(new Account(Id=accountId , Client_Contact__c = accountIdToContactMap.get(accountId).Id));
-                }
-
-                update accounts;
-                
-            }
-            
         }

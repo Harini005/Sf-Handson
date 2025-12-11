@@ -28,4 +28,24 @@ public with sharing class LeadTriggerHandler {
             }
         }
     }
+
+    public static void createFollowUpTask(){
+        Map<Id, Lead> newMap = (Map<Id, Lead>) Trigger.newMap;
+        Map<Id, Lead> oldMap = (Map<Id, Lead>) Trigger.oldMap;
+        List<Task> tasks = new List<Task>();
+
+        for(Lead record : newMap.values()){
+            if(record.IsConverted && !oldMap.get(record.Id).IsConverted && (String.isNotBlank(record.ConvertedAccountId) || String.isNotBlank(record.convertedContactId) || String.isNotBlank(record.ConvertedOpportunityId))){
+                tasks.add(new Task(
+                    subject = 'Follow up', 
+                    description = 'Follow up on converted lead', 
+                    ActivityDate = System.Today().AddDays(7), 
+                    whatId = record.ConvertedAccountId,
+                    whoId = record.ConvertedContactId
+                ));
+            }
+
+            insert tasks;
+        }
+    }
 }
