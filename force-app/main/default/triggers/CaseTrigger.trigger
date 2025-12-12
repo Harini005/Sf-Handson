@@ -6,8 +6,14 @@ trigger CaseTrigger on Case (after insert, after update , after delete, after un
             if(Trigger.isInsert){
                 CaseTriggerHandler.updateAccount();
             }
+
+            if(Trigger.isUpdate){
+                CaseTriggerHandler.updateAccountRating();
+            }
             
         }
+
+        
     }
 
 }

@@ -1,9 +1,9 @@
 public with sharing class CaseTriggerHandler {
-
+    
     public static final String NEW_CASE = 'New';
     public static final String WORKING = 'Working';
     public static final String ESCALATED = 'Escalated';
-
+    
     public static void updateAccount(){
         
         List<Case> cases = (List<Case>) Trigger.new;
@@ -17,24 +17,24 @@ public with sharing class CaseTriggerHandler {
         update accounts;
         
     }
-        public static void updateCasesCountOnAccount(){
+    public static void updateCasesCountOnAccount(){
         Map<Id, Case> newMap = (Map<Id, Case>) Trigger.newMap;
         Map<Id, Case> oldMap = (Map<Id, Case>) Trigger.oldMap;
-
+        
         List<Case> records = (oldMap == null) ? newMap.values() : oldMap.values();
         List<Id> accountIds = new List<Id>();
-        Map<Id,Account> accounts = new  Map<Id,Account>(); 
-
+        Map<Id,Account> accounts = new  Map<Id,Account>();
+        
         for(Case record : records){
             accountIds.add(record.AccountId);
         }
-
+        
         if(accountIds.isEmpty()){
             return;
         }
-
+        
         List<AggregateResult> results = [SELECT count(Id) records , Status status, AccountId accId From Case Where AccountId IN :accountIds Group By AccountId, status];
-
+        
         for(AggregateResult res : results){
             Id accuontId= (Id) res.get('accId');
             Account acc;
@@ -56,17 +56,17 @@ public with sharing class CaseTriggerHandler {
                 }
                 when 'Escalated'{
                     acc.Escalated_Cases__c = (Integer) res.get('records');
-                
+                    
                 }
             }
             accounts.put(acc.Id,acc);
             system.debug(accounts);
         }
-
+        
         update accounts.values();
     }
-
-      public static void activateAccountContact(){
+    
+    public static void activateAccountContact(){
         List<Case> cases = (List<Case>) Trigger.new;
         
         List<Sobject> relatedIds = new List<Sobject>();
@@ -84,5 +84,37 @@ public with sharing class CaseTriggerHandler {
         }
         
         update relatedIds;
+    }
+    
+    public static void updateAccountRating(){
+        Map<Id, case> newMap = (Map<Id, case>) Trigger.newMap;
+        Map<Id, Case> oldMap =(Map<Id, Case>)Trigger.oldMap;
+        Set<Id> accountIds = new Set<Id>();
+        
+        for(case record : newMap.values()){
+            if(record.status == 'closed' && oldMap.get(record.Id).status != record.status){
+                accountIds.add(record.AccountId);
+            }
+        }
+        
+        if(accountIds.isEmpty()){
+            return;
+        }
+        
+        List<AggregateResult> results = [SELECT AccountId accId, count(Id) recs From Case where status='closed' Group By AccountId];
+        List<Account> accRecords = new List<Account>();
+        
+        for(AggregateResult result : results){
+            accRecords.add(
+                new Account(Id=(Id)result.get('accId'), Rating = getRating((Integer)result.get('recs')))
+                
+            );
+        }
+
+        update accRecords;
+    }
+    
+    private static String getRating(Integer countOfClosedCases){
+        return (countOfClosedCases < 2) ? 'cold' : (countOfClosedCases == 2 ?  'warm' : 'Hot');
     }
 }
