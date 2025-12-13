@@ -1,0 +1,9 @@
+<template>
+    <lightning-card>
+        <template for:each={fruits} for:item="fruit">
+            <div key={fruit} data-fruit={fruit}>{fruit}</div>
+        </template>
+
+        <lightning-button label="Click" onclick={buttonHandler}></lightning-button>
+    </lightning-card>
+</template>

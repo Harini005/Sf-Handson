@@ -1,0 +1,12 @@
+.Bold{
+    font-weight : bolder;
+}
+
+.color{
+    color :red;
+    text-align : center;
+}
+
+.backgroundColor{
+    background-color : black
+}
