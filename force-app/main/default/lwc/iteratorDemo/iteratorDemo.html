@@ -1,0 +1,11 @@
+<template>
+    <lightning-card>
+        <blockquote>
+            <template iterator:fruit={fruits}>
+                <div key={fruit.value} class="boxStyling">
+                    <p>{fruit.value}</p>
+                </div>
+            </template>
+        </blockquote>
+    </lightning-card>
+</template>

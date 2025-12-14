@@ -1,4 +1,5 @@
-trigger CaseTrigger on Case (after insert, after update , after delete, after undelete) {
+trigger CaseTrigger on Case (after insert, after update , after delete, after undelete,before insert) {
+
 
     if(Trigger_Invocation__mdt.getInstance('CaseTrigger').Active__c){
         if(Trigger.isAfter){
@@ -13,7 +14,11 @@ trigger CaseTrigger on Case (after insert, after update , after delete, after un
             
         }
 
-        
+        if(Trigger.isBefore){
+            if(Trigger.isInsert){
+                CaseTriggerHandler.activateAccountContact();
+            }
+        }
     }
 
 }

@@ -1,0 +1,13 @@
+.boxStyling{
+    border : 0.5px solid gainsboro;
+    background-color :rgba(0, 255, 255, 0.475);
+    color:darkblue;
+    text-align : center;
+    font-weight : bold;
+    margin : 2px 0px;
+}
+
+.boxStyling:hover{
+    background-color : darkblue;
+    color:white;
+}

@@ -1,0 +1,14 @@
+<template>
+    <lightning-card>
+        <lightning-input type="text" label="Enter Text" onchange={captureInput}></lightning-input>
+        <template lwc:if={displayMessage}>
+            <div class="slds-m-top_medium">
+                <p>{message}</p>
+            </div>
+        </template>
+        <footer slot="footer">
+            <lightning-button label="Capitals" onclick={buttonHandler}></lightning-button>
+            <lightning-button label="Smalls" onclick={buttonHandler}></lightning-button>
+        </footer>
+    </lightning-card>
+</template>
