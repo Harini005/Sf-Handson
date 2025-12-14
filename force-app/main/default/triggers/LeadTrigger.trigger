@@ -9,6 +9,7 @@ trigger LeadTrigger on Lead (before insert, before update, after update) {
         if(Trigger.isAfter){
             if(Trigger.isUpdate){
                 LeadTriggerHandler.createFollowUpTask();
+                ConvertLead.doInvoke();
             }
         }
     }
