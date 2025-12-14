@@ -1,0 +1,10 @@
+<template>
+    <lightning-card>
+        <p>Text To Style</p>
+        <lightning-input type="checkbox" onchange={changeHandler} label="Bold" name="Bold"></lightning-input>
+        <lightning-input type="checkbox" onchange={changeHandler} label="color" name="color"></lightning-input>
+        <lightning-input type="checkbox" onchange={changeHandler} label="Background color" name="backgroundColor"></lightning-input>
+
+        <lightning-button label="Apply" onclick={buttonHandler}></lightning-button>
+    </lightning-card>
+</template>
