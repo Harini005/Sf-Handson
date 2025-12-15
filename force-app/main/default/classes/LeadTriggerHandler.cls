@@ -48,4 +48,42 @@ public with sharing class LeadTriggerHandler {
             insert tasks;
         }
     }
+
+     public static void updateRelatedRecords(){
+        Map<Id, Lead> newMap = new Map<Id, Lead>([Select Id , IsConverted From Lead Where IsConverted=true and Id IN :(Set<Id>)Trigger.newMap.keySet()]);
+        Map<Id, Lead> oldMap = (Map<Id, Lead>) Trigger.oldMap;
+        List<Id> leadIds = new List<Id>();
+       
+        for(Lead record : newMap.values()){
+            if(record.IsConverted && record.IsConverted != oldMap.get(record.Id).IsConverted){
+                leadIds.add(record.Id);
+            }
+        }
+
+        List<Lead> records = [SELECT Id,Name, ConvertedContactId, ConvertedAccountId, ConvertedOpportunityId From Lead Where Id IN :leadIds];
+
+        if(records.isEmpty()){
+            return;
+        }
+
+        List<Sobject> recordsToUpdate = new List<Sobject>();
+
+        for(Lead record : records){
+            if(String.isNotBlank(record.ConvertedAccountId)){
+                recordsToUpdate.add(new Account(Id=record.ConvertedAccountId, Description='converted from the Lead :'+record.Name));
+            }
+            if(String.isNotBlank(record.ConvertedContactId)){
+                recordsToUpdate.add(new contact(Id=record.convertedContactId, Description='converted from the Lead :'+record.Name));
+            }  
+            if(String.isNotBlank(record.convertedOpportunityId)){
+                recordsToUpdate.add(new Opportunity(Id=record.ConvertedOpportunityId, Description='converted from the Lead :'+record.Name));
+            }
+        }
+
+        if(recordsToUpdate.isEmpty()){
+            return;
+        }
+
+        update recordsToUpdate;
+    }
 }
