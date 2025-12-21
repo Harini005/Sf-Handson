@@ -6,10 +6,12 @@ trigger CaseTrigger on Case (after insert, after update , after delete, after un
             CaseTriggerHandler.updateCasesCountOnAccount();
             if(Trigger.isInsert){
                 CaseTriggerHandler.updateAccount();
+                CaseTriggerHandler.updateTaskAndAccount();
             }
 
             if(Trigger.isUpdate){
                 CaseTriggerHandler.updateAccountRating();
+                CaseTriggerHandler.updateTaskAndAccount();
             }
             
         }

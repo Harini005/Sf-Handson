@@ -117,4 +117,46 @@ public with sharing class CaseTriggerHandler {
     private static String getRating(Integer countOfClosedCases){
         return (countOfClosedCases < 2) ? 'cold' : (countOfClosedCases == 2 ?  'warm' : 'Hot');
     }
+
+    public static void updateTaskAndAccount(){
+        Map<Id, Case> newMap = (Map<Id, Case>) Trigger.newMap;
+        Map<Id, Case> oldMap = (Map<Id, Case>) Trigger.oldMap;
+        Boolean isInsert = false;
+
+        if(oldMap == null){
+            isInsert = true;
+        }
+
+        List<Id> caseIds = new List<Id>();
+        List<Sobject> recordsToUpdate = new List<Sobject>();
+
+        for(Case record : newMap.values()){
+            if(isInsert || (oldMap.get(record.Id).Status != record.Status)){
+                caseIds.add(record.Id);
+                if(String.isNotBlank(record.AccountId)){
+                    String oldValue = isInsert ? Null : oldMap.get(record.Id).Description;
+                    recordsToUpdate.add(new Account(Id=record.AccountId, Description= String.format('Case Status Update from {0} to{1}', new List<object>{oldValue , record.Status})));
+                }
+            }
+        }
+
+        if(caseIds.isEmpty()){
+            return;
+        }
+
+        List<Case> cases = [Select Id , Status, (Select Id, status From Tasks where Status != 'Completed') From Case where Id IN :caseIds ];
+
+        for(Case record : cases){
+            if(record.Tasks.isEmpty()){
+                return;
+            }
+            for(Task taskRecord : record.Tasks){
+                String oldValue = isInsert ? Null : oldMap.get(record.Id).Description;
+                recordsToUpdate.add(new Task(Id=taskRecord.Id ,Description= String.format('Case Status Update from {0} to{1}', new List<object>{oldValue , record.Status})));
+            }
+        }
+
+        update recordsToUpdate;
+    }
+
 }
