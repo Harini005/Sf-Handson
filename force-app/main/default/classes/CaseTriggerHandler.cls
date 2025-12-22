@@ -159,4 +159,42 @@ public with sharing class CaseTriggerHandler {
         update recordsToUpdate;
     }
 
+    public static void createEvent(){
+        Map<Id, Case> newMap = (Map<Id, Case>) Trigger.newMap;
+        Map<Id, Case> oldMap = (Map<Id, Case>) Trigger.oldMap;
+       Map<Id, Case> accountIdToCases = new Map<Id, Case>();
+       List<Sobject> records = new List<Sobject>();
+
+        for(Case record : newMap.values()){
+            if((oldMap == null || record.status != oldMap.get(record.Id).status) && String.isNotBlank(record.AccountId)){
+                accountIdToCases.put(record.AccountId, record);
+            } 
+        }
+
+        if(accountIdToCases.isEmpty()){
+            return ;
+        }
+
+        Map<Id, Account> accounts = new Map<Id, Account>([Select Id, (Select Id From Contacts Where Primary_Contact__c=true) From Account Where Id IN :accountIdToCases.keySet()]);
+
+        for(Id accountId : accounts.keySet()){
+            if(accounts.get(accountId).Contacts.isEmpty()){
+                continue;
+            }
+            
+
+            
+                records.add(new Case(Id = accountIdToCases.get(accountId).Id , ContactId = accounts.get(accountId).contacts?.get(0).Id));
+
+               Task tsk = new Task();
+               tsk.WhoId = accounts.get(accountId).contacts?.get(0).Id;
+               tsk.whatId =accountIdToCases.get(accountId).Id;
+               tsk.subject =accountIdToCases.get(accountId).Subject;
+               tsk.Status = 'Not Started';
+               records.add(tsk);
+           
+        }
+
+        upsert records;
+    }
 }
