@@ -1,0 +1,10 @@
+<template>
+    <lightning-card>
+        <p class="slds-text-align_center slds-text-color_success"><b>Simple Query</b></p>
+        <template lwc:if={recordData}>
+            <blockquote>
+                <lightning-datatable key-field="Id" data={recordData} columns={columns} hide-checkbox-column></lightning-datatable>
+            </blockquote>
+        </template>
+    </lightning-card>
+</template>

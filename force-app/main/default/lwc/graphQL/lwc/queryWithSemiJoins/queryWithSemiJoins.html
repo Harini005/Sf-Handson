@@ -1,0 +1,10 @@
+<template>
+    <lightning-card>
+        <p class="slds-text-align_center slds-text-color_success"><b>Query With Semi Joins</b></p>
+        <template lwc:if={contactData}>
+            <blockquote>
+                <lightning-datatable data={contactData} columns={columns} key-field="Id" hide-checkbox-column></lightning-datatable>
+            </blockquote>
+        </template>
+    </lightning-card>
+</template>
