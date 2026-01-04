@@ -1,0 +1,9 @@
+<template>
+    <lightning-card>
+        <blockquote>
+            <lightning-combobox options={getData} label="Opportunities" onchange={selectedValue} value={getSelectedValue}></lightning-combobox>
+
+            <p>Value Selected : {getSelectedValue}</p>
+        </blockquote>
+    </lightning-card>
+</template>

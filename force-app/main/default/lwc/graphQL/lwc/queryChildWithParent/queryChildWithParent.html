@@ -1,0 +1,11 @@
+<template>
+    <lightning-card>
+        <blockquote>
+            <lightning-combobox label="Select an Industry" options={getOptions}
+                onchange={getSelectedOption}></lightning-combobox>
+            <template lwc:if={getPointOfContacts}>
+                <lightning-combobox options={getPointOfContacts} label="Point Of Contacts"></lightning-combobox>
+            </template>
+        </blockquote>
+    </lightning-card>
+</template>
