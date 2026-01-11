@@ -8,11 +8,13 @@ trigger CaseTrigger on Case (after insert, after update , after delete, after un
                 CaseTriggerHandler.updateAccount();
                 CaseTriggerHandler.updateTaskAndAccount();
                 CaseTriggerHandler.createEvent();
+                CaseTriggerHandler.createTaskOnContact();
             }
 
             if(Trigger.isUpdate){
                 CaseTriggerHandler.updateAccountRating();
                 CaseTriggerHandler.updateTaskAndAccount();
+                CaseTriggerHandler.createTaskOnContact();
             }
             
         }

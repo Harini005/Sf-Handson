@@ -197,4 +197,37 @@ public with sharing class CaseTriggerHandler {
 
         upsert records;
     }
+
+    public static void createTaskOnContact(){
+        Map<Id,Case> newMap = (Map<Id,Case>) Trigger.newMap;
+        Map<Id,Case> oldMap = (Map<Id,Case>) Trigger.oldMap;
+
+        Set<Id> accountIds = new Set<Id>();
+
+        for(Case record : newMap.values()){
+            if(record.Escalation_Required__c  && (oldMap == null || oldMap.get(record.Id).Escalation_Required__c != record.Escalation_Required__c) && String.isNotBlank(record.AccountId)){
+                accountIds.add(record.AccountId);
+            }
+        }
+
+        accountIds.remove(null);
+
+        if(accountIds.isEmpty()){
+            return;
+        }
+
+        List<Contact> contacts = [SELECT Id, AccountId FROM Contact Where AccountId IN :accountIds AND Primary_Contact__c = true];
+        List<Task> tasks = new List<Task>();
+
+        if(contacts.isEmpty()){
+            return;
+        }
+
+
+        for(Contact record : contacts){
+            tasks.add(new Task(whoId=record.Id , whatId=record.AccountId , subject='Follow Up on Escalation Case', Priority='High'));
+        }
+
+        insert tasks;
+    }
 }
