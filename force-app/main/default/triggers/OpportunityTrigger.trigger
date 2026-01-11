@@ -14,6 +14,7 @@ trigger OpportunityTrigger on Opportunity (after insert , after update, after de
             if(Trigger.isUpdate){
                 OpportunityTriggerHandler.validateClosedLostReason();
                 OpportunityTriggerHandler.validateCloseOpportunitiesOnAccount();
+                 OpportunityTriggerHandler.insertContactRoles();
             }
 
             if(Trigger.isDelete){

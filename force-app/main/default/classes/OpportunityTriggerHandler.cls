@@ -197,4 +197,52 @@ public with sharing class OpportunityTriggerHandler {
 
         update accounts;
     }
+
+    public static void insertContactRoles(){
+        Map<Id, Opportunity> newMap = (Map<Id, Opportunity>)Trigger.newMap;
+        Map<Id, Opportunity> oldMap = (Map<Id, Opportunity>) Trigger.oldMap;
+        Set<Id> accountIds = new Set<Id>();
+        Set<Id> oppIds = new Set<Id>();
+
+        for(Opportunity opp : newMap.values()){
+            if(String.isNotBlank(opp.Type) && oldMap.get(opp.Id).Type != newMap.get(opp.Id).Type){
+                accountIds.add(opp.AccountId);
+                oppIds.add(opp.Id);
+            }
+        }
+
+        accountIds.remove(null);
+
+        if(accountIds.isEmpty()){
+            return;
+        }
+
+        Map<Id,Account> accounts = new Map<Id, Account>([Select Id,Name, (Select Id From Contacts) From Account Where Id IN :accountIds]);
+        List<OpportunityContactRole> contactRoles = new List<OpportunityContactRole>();
+        for(Opportunity opp : newMap.values()){
+            if(!accounts.containsKey(opp.AccountId)){
+                return;
+            }
+            System.debug(accounts.get(opp.AccountId).Contacts.isEmpty());
+
+            if(accounts.get(opp.AccountId).Contacts.isEmpty()){
+                opp.addError('Please add a contact to proceed further');
+                return;
+            }
+
+            OpportunityContactRole contactRole = new OpportunityContactRole();
+            contactRole.OpportunityId = opp.Id;
+            contactRole.ContactId = accounts.get(opp.AccountId).contacts[0]?.Id;
+            contactRole.Role = 'Decision Maker';
+            contactRole.isPrimary = true;
+
+            contactRoles.add(contactRole);
+        }
+
+        if(contactRoles.isEmpty()){
+            return;
+        }
+
+        insert contactRoles;
+    }
 }
