@@ -1,0 +1,19 @@
+<template>
+    <lightning-card>
+        <blockquote>
+            <lightning-combobox options={getAccounts} label="Accounts"
+                onchange={getSelectedAccount}></lightning-combobox>
+                <br>
+            <template lwc:if={getContacts}>
+                <template lwc:if={contactData}>
+                    <template for:each={contactData} for:item="contact">
+                        <div key={contact.node.Id}>
+                            <lightning-input name="Contact Data" type="radio" label={contact.node.Name.value} value={contact.node.Name.value}></lightning-input>
+                        </div>
+
+                    </template>
+                </template>
+            </template>
+        </blockquote>
+    </lightning-card>
+</template>
