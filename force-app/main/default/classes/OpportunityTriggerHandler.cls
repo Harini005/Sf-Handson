@@ -245,4 +245,38 @@ public with sharing class OpportunityTriggerHandler {
 
         insert contactRoles;
     }
+
+    public static void updateMaxAmountOnOpp(){
+        Map<Id, Opportunity> newMap = (Map<Id,Opportunity>) Trigger.newMap;
+        Map<Id, Opportunity> oldMap = (Map<Id, Opportunity>) Trigger.oldMap;
+        Set<Id> accountIds = new Set<Id>();
+
+        for(Opportunity opp : newMap.values()){
+            if(oldMap == null || (oldMap.get(opp.Id).Amount != opp.Amount)){
+                accountIds.add(opp.AccountId);
+            }
+        }
+
+        List<Opportunity> opps = [SELECT Id, Amount, AccountId FROM Opportunity WHERE AccountId IN :accountIds ORDER BY Amount DESC];
+        Map<Id, Double> accountIdToAmount = new Map<Id, Double>();
+        List<Account> accounts = new List<Account>();
+
+        for(Opportunity opp : opps){
+            if(!accountIdToAmount.containsKey(opp.AccountId)){
+                accountIdToAmount.put(opp.AccountId , opp.Amount);
+            }
+            else{
+                Double val = accountIdToAmount.get(opp.AccountId);
+                if(val < opp.Amount){
+                    accountIdToAmount.put(opp.AccountId , opp.Amount);
+                }
+            }
+        }
+
+        for(Id accountId : accountIdToAmount.keySet()){
+            accounts.add(new Account(Id=accountId , Max_Opportunity_Amount__c = accountIdToAmount.get(accountId)));
+        }
+
+        update accounts;
+    }
 }
